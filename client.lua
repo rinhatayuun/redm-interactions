@@ -2,6 +2,7 @@ local PickerIsOpen = false
 local InteractionMarker
 local StartingCoords
 local CurrentInteraction
+local CurrentAnimation
 local CanStartInteraction = true
 local MaxRadius = 0.0
 
@@ -39,7 +40,7 @@ function HasCompatibleModel(entity, models)
 	local entityModel = GetEntityModel(entity)
 
 	for _, model in ipairs(models) do
-		if entityModel  == GetHashKey(model) then
+		if entityModel == GetHashKey(model) then
 			return model
 		end
 	end
@@ -64,12 +65,13 @@ function PlayAnimation(ped, anim)
 	RequestAnimDict(anim.dict)
 
 	while not HasAnimDictLoaded(anim.dict) do
-		Citizen.Wait(0)
+		Citizen.Wait(10)
 	end
 	
 	TaskPlayAnim(ped, anim.dict, anim.name, 0.0, 0.0, -1, 1, 1.0, false, false, false, "", false)
+	CurrentAnimation = anim
 
-	RemoveAnimDict(anim.dict)
+	--RemoveAnimDict(anim.dict)
 end
 
 function StartInteractionAtCoords(interaction)
@@ -87,6 +89,12 @@ function StartInteractionAtCoords(interaction)
 		StartingCoords = GetEntityCoords(ped)
 	end
 
+	if props then
+		for propindex, propdata in ipairs(props) do
+			CreateProp(ped, propdata, propindex)
+		end
+	end
+
 	ClearPedTasksImmediately(ped)
 
 	FreezeEntityPosition(ped, true)
@@ -99,11 +107,7 @@ function StartInteractionAtCoords(interaction)
 		PlayAnimation(ped, interaction.animation)
 	end
 		
-	if props then
-		for propindex, propdata in ipairs(props) do
-			CreateProp(ped, propdata, propindex)
-		end
-	end
+	
 	
 	for i, d in ipairs(PropTable) do
 		if IsEntityOnScreen(d.handle) then
@@ -118,6 +122,7 @@ function StartInteractionAtCoords(interaction)
 	end
 	-- Wait so that current interaction registers
 	Wait(100)
+	
 	CurrentInteraction = interaction
 end
 
@@ -265,7 +270,13 @@ function StopInteraction()
 
 	ClearPedTasksImmediately(ped)
 	FreezeEntityPosition(ped, false)
-	
+
+	-- Stop animation
+	if CurrentAnimation then
+		RemoveAnimDict(CurrentAnimation.dict)
+		CurrentAnimation = nil
+	end 
+
 	-- Delete props
 	for i in pairs (PropTable) do
 		DetachEntity(PropTable[i].handle)
@@ -358,37 +369,22 @@ function CreateProp(ped, data, propindex)
     while not HasModelLoaded(hash) do
 		Wait(10)
 	end
-	local pHandle = CreateObjectNoOffset(hash, initPosition.x, initPosition.y, initPosition.z, false, false, false, false)
+	--local pHandle = CreateObjectNoOffset(hash, initPosition.x, initPosition.y, initPosition.z, false, false, false, false)
+	local pHandle = CreateObject(hash, initPosition.x, initPosition.y, initPosition.z, true, true, false, false, true)
 	table.insert(PropTable, {model = pModel, handle = pHandle, bone = pBone, position = pPosition, rotation = pRotation})
 	print("CreateProp:: Incoming data - "..json.encode(PropTable[propindex]))
 	
 	print("CreateProp:: Created Model: "..pModel..", Handle: "..pHandle..", location: "..json.encode(GetEntityCoords(pHandle)))
-	SetModelAsNoLongerNeeded(hash)
 	if data.attach then
 		print("Attaching "..pModel.." ("..pHandle..") to entity "..ped)
-		AttachEntityToEntity(pHandle, ped, pBone, pPosition.x, pPosition.y, pPosition.z, pRotation.x, pRotation.y, pRotation.z, false, false, false, false, 1, true)
+   		--AttachEntityToEntity(int /* Entity */ entity1, int /* Entity */ entity2, int boneIndex, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot, bool p9, bool useSoftPinning, bool collision, bool isPed, int vertexIndex, bool fixedRot);
+		AttachEntityToEntity(pHandle, ped, pBone, pPosition.x, pPosition.y, pPosition.z, pRotation.x, pRotation.y, pRotation.z, true, true, false, false, 1, true)
 	end
 
 	print("CreateProp:: Finished with Model: "..pModel..", Handle: "..pHandle..", location: "..json.encode(GetEntityCoords(pHandle)))
+	SetModelAsNoLongerNeeded(hash)
 end
 
---[[function AttachProp(ped, data, propindex)
-	PropTable[propindex].bone = data.bone
-	PropTable[propindex].position = data.position
-	PropTable[propindex].rotation = data.rotation
-	local coords = GetEntityCoords(ped)
-	
-	if type(data.bone) == "string" then
-		PropTable[propindex].bone = GetEntityBoneIndexByName(ped, data.bone)
-	end
-	CreateProp(ped, data.model, propindex)
-Wait(100)
-print(json.encode(PropTable[propindex]))
-	--AttachEntityToEntity(PropTable[propindex].handle, ped, PropTable[propindex].bone, 0, 0, 0, 0, 0, 0, false, false, true, false, 0, true, false, false)
-print("AttachProp:: Model: "..data.model..", Handle: "..PropTable[propindex].handle..", location: "..json.encode(GetEntityCoords(handle)))
-	Wait(100)
-	print(json.encode(GetEntityAttachedTo(PropTable[propindex].handle)))
-end]]
 function rt_print(message)
     TriggerEvent('chat:addMessage', {
         color = {255, 85, 85},
