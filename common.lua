@@ -245,5 +245,51 @@ BathingAnimations = {
 }
 
 EatingAnimations = {
-	{label = "Eat", dict = "amb_rest_sit@prop_human_seat_chair_table@eating@fork_knife@cutting@male_a@base", name = "cutting_trans_chewing_01"}
+	{
+		label = "Eat", 
+		dict = "amb_rest_sit@prop_human_seat_chair_table@eating@fork_knife@cutting@male_a@base", 
+		name = "cutting_trans_chewing_01",
+		frames = {
+			-- "base",
+			-- "base_knife",
+			-- "base_fork",
+			"cutting_trans_chewing_01",
+			"cutting_trans_chewing_01_fork",
+			"cutting_trans_chewing_01_knife",
+			"cutting_trans_chewing_01_main",
+			"cutting_trans_chewing_02",
+			"cutting_trans_chewing_02_fork",
+			"cutting_trans_chewing_02_knife",
+			"cutting_trans_chewing_02_main",
+			"cutting_trans_chewing_03_fork",
+			"cutting_trans_chewing_03",
+			"cutting_trans_chewing_03_knife",
+			"cutting_trans_chewing_03_main",
+			"cutting_trans_chewing_05",
+			"cutting_trans_chewing_05_fork",
+			"cutting_trans_chewing_05_knife",
+			"cutting_trans_chewing_05_main"
+		},
+		props = {
+			{
+                model = 'p_dinnerknife01x',
+                bone = 'IK_R_Hand',
+                position = vector3(0.09, 0.04, -0.02),
+                rotation = vector3(6.00, 0.09, -65.09),
+                attach = true
+            },
+            {
+                model = 'p_dinnerfork01x',
+                bone = 'IK_L_Hand',
+                position = vector3(0.09, 0.03, 0.02),
+                rotation = vector3(02.00, 00.9, -65.09),
+                attach = true
+            }
+		},
+		frametime = -1,
+		flag = 0,
+		timer = 2000
+	},
+	{label = "Eat something else", dict = "amb_rest_sit@prop_human_seat_chair_table@eating@fork_knife@cutting@male_a@base", name = "cutting_trans_chewing_01"}
 }
+

@@ -69,7 +69,11 @@ function startInteraction() {
 				heading: parseFloat(interaction.getAttribute('data-heading')),
 				animation: {
 					dict: interaction.getAttribute('data-animation-dict'),
-					name: interaction.getAttribute('data-animation-name')
+					name: interaction.getAttribute('data-animation-name'),
+					frames: JSON.parse(interaction.getAttribute('data-animation-frames')),
+					timer: interaction.getAttribute('data-animation-timer'),
+					frametime: interaction.getAttribute('data-animation-frametime'),
+					flag: interaction.getAttribute('data-animation-flag')
 				},
 				object: parseInt(interaction.getAttribute('data-object')),
 				effect: interaction.getAttribute('data-effect'),
@@ -136,6 +140,10 @@ function showInteractionPicker(data) {
 		} else {
 			div.setAttribute('data-animation-dict', interaction.animation.dict);
 			div.setAttribute('data-animation-name', interaction.animation.name);
+			div.setAttribute('data-animation-frames', JSON.stringify(interaction.animation.frames));
+			div.setAttribute('data-animation-timer', interaction.animation.timer);
+			div.setAttribute('data-animation-frametime', interaction.animation.frametime);
+			div.setAttribute('data-animation-flag', interaction.animation.flag);
 		}
 
 		if (interaction.object) {

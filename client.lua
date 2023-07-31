@@ -67,8 +67,16 @@ function PlayAnimation(ped, anim)
 	while not HasAnimDictLoaded(anim.dict) do
 		Citizen.Wait(10)
 	end
+	print(json.encode(anim.frames))
 	
-	TaskPlayAnim(ped, anim.dict, anim.name, 0.0, 0.0, -1, 1, 1.0, false, false, false, "", false)
+	for a,frame_name in ipairs (anim.frames) do
+		print ("Playing animation "..frame_name)
+		--TaskPlayAnim(ped, anim.dict, frame_name, 0.0, 0.0, anim.frametime, anim.flag, 1.0, false, false, false, "", false)
+		TaskPlayAnim(ped, anim.dict, frame_name, 0.0, 0.0, 10, 0, 1.0, false, false, false, "", false)
+		Wait(anim.timer)            
+	end       
+	Wait(anim.timer)
+	--TaskPlayAnim(ped, anim.dict, anim.name, 0.0, 0.0, -1, 1, 1.0, false, false, false, "", false)
 	CurrentAnimation = anim
 
 	--RemoveAnimDict(anim.dict)
@@ -182,7 +190,7 @@ function AddInteractions(availableInteractions, interaction, playerPed, playerCo
 					distance = distance,
 					label = interaction.label,
 					effect = interaction.effect,
-					props = interaction.props
+					props = scenario.props
 				})
 			end
 		end
@@ -202,7 +210,7 @@ function AddInteractions(availableInteractions, interaction, playerPed, playerCo
 					distance = distance,
 					label = interaction.label,
 					effect = interaction.effect,
-					props = interaction.props
+					props = animation.props
 				})
 			end
 		end
