@@ -57,32 +57,51 @@ function CanStartInteractionAtObject(interaction, object, playerCoords, objectCo
 end
 
 function PlayAnimation(ped, anim)
-	if not DoesAnimDictExist(anim.dict) then
-		print("Invalid animation: " .. anim.dict)
-		return
+	print("Play animation "..anim.label)
+	if not CurrentAnimation then
+		print("Not currenting in an animation")
+		CurrentAnimation = anim
+		--Citizen.CreateThread(function()
+			-- Loop through the list of dictionaries and play the animations
+			for di = 1, #anim.dicts do
+				dict = anim.dicts[di]
+				print("Animation dictionary = "..dict.name)
+				if not DoesAnimDictExist(dict.name) then
+					print("Invalid animation dictionary: " .. dict.name)
+					return
+				end
+
+				-- Request the dictionary
+				RequestAnimDict(dict.name)
+				while not HasAnimDictLoaded(dict.name) do
+					Citizen.Wait(10)
+				end
+				
+				-- Play each of the animations in turn
+				for findex,frame in ipairs (dict.frames) do
+					print ("Playing animation "..dict.name.." - "..frame.name)
+					time = tonumber(frame.time)
+					flag = tonumber(frame.flag)
+					TaskPlayAnim(ped, dict.name, frame.name, 1.0, 1.0, time, flag, 0.0, false, false, false)
+					Citizen.Wait(100) -- Short delay to allow the animation to trigger, otherwise it skips over the while condition
+					while IsEntityPlayingAnim(ped, dict.name, frame.name, 1) do
+						Citizen.Wait(1000)
+					end
+				end
+				RemoveAnimDict(dict)
+			end
+			-- Animations have finished
+			CurrentAnimation = nil
+		--end)
+	else
+		print("Animation is currently in progress, don't do anything")
 	end
-
-	RequestAnimDict(anim.dict)
-
-	while not HasAnimDictLoaded(anim.dict) do
-		Citizen.Wait(10)
-	end
-	print(json.encode(anim.frames))
-	
-	for a,frame_name in ipairs (anim.frames) do
-		print ("Playing animation "..frame_name)
-		--TaskPlayAnim(ped, anim.dict, frame_name, 0.0, 0.0, anim.frametime, anim.flag, 1.0, false, false, false, "", false)
-		TaskPlayAnim(ped, anim.dict, frame_name, 0.0, 0.0, 10, 0, 1.0, false, false, false, "", false)
-		Wait(anim.timer)            
-	end       
-	Wait(anim.timer)
-	--TaskPlayAnim(ped, anim.dict, anim.name, 0.0, 0.0, -1, 1, 1.0, false, false, false, "", false)
-	CurrentAnimation = anim
-
-	--RemoveAnimDict(anim.dict)
 end
 
 function StartInteractionAtCoords(interaction)
+	if not interaction then
+		return
+	end
 	local x = interaction.x
 	local y = interaction.y
 	local z = interaction.z
@@ -97,7 +116,9 @@ function StartInteractionAtCoords(interaction)
 		StartingCoords = GetEntityCoords(ped)
 	end
 
-	if props then
+	-- If the prop table is currently empty, and the current interaction requires props, create them
+	-- If the prop table is not empty, we're probably restarting an existing animation, so don't re-create props!
+	if #PropTable == 0 and props then
 		for propindex, propdata in ipairs(props) do
 			CreateProp(ped, propdata, propindex)
 		end
@@ -113,16 +134,6 @@ function StartInteractionAtCoords(interaction)
 		SetEntityCoordsNoOffset(ped, x, y, z)
 		SetEntityHeading(ped, h)
 		PlayAnimation(ped, interaction.animation)
-	end
-		
-	
-	
-	for i, d in ipairs(PropTable) do
-		if IsEntityOnScreen(d.handle) then
-			print("Prop "..i.." -  Model: "..d.model..", Location: "..json.encode(GetEntityCoords(d.handle))..", On Screen: Yes")
-		else
-			print("Prop "..i.." -  Model: "..d.model..", Location: "..json.encode(GetEntityCoords(d.handle))..", On Screen: No")
-		end
 	end
 
 	if interaction.effect then
@@ -281,7 +292,9 @@ function StopInteraction()
 
 	-- Stop animation
 	if CurrentAnimation then
-		RemoveAnimDict(CurrentAnimation.dict)
+		for di = 1, #(CurrentAnimation.dicts) do
+			RemoveAnimDict(CurrentAnimation.dicts[di].name)
+		end
 		CurrentAnimation = nil
 	end 
 
@@ -324,7 +337,27 @@ function IsPedUsingInteraction(ped, interaction)
 	if interaction.scenario then
 		return IsPedUsingScenarioHash(ped, GetHashKey(interaction.scenario))
 	elseif interaction.animation then
-		return IsEntityPlayingAnim(ped, interaction.animation.dict, interaction.animation.name, 1)
+		Citizen.Wait(500)
+		print("IsPedUsingInteraction: Checking animation frames")
+		dicts = interaction.animation.dicts
+		numdicts = #dicts
+		inframe = false
+
+		for di = 1, numdicts do
+			print ("Checking dictionary "..dicts[di].name)
+			frames = dicts[di].frames
+			numframes = #frames
+			for fi = 1, numframes do
+				print ("  Checking frame "..frames[fi].name)
+				if IsEntityPlayingAnim(ped, interaction.animation.dict, frames[fi].name, 1) then
+					print ("  Frame "..frames[fi].name.." is playing")
+					inframe = true
+				end
+			end
+		end
+		
+		--return IsEntityPlayingAnim(ped, interaction.animation.dict, interaction.animation.name, 1)
+		return inframe
 	else
 		return false
 	end
@@ -380,16 +413,16 @@ function CreateProp(ped, data, propindex)
 	--local pHandle = CreateObjectNoOffset(hash, initPosition.x, initPosition.y, initPosition.z, false, false, false, false)
 	local pHandle = CreateObject(hash, initPosition.x, initPosition.y, initPosition.z, true, true, false, false, true)
 	table.insert(PropTable, {model = pModel, handle = pHandle, bone = pBone, position = pPosition, rotation = pRotation})
-	print("CreateProp:: Incoming data - "..json.encode(PropTable[propindex]))
+	--print("CreateProp:: Incoming data - "..json.encode(PropTable[propindex]))
 	
-	print("CreateProp:: Created Model: "..pModel..", Handle: "..pHandle..", location: "..json.encode(GetEntityCoords(pHandle)))
+	--print("CreateProp:: Created Model: "..pModel..", Handle: "..pHandle..", location: "..json.encode(GetEntityCoords(pHandle)))
 	if data.attach then
-		print("Attaching "..pModel.." ("..pHandle..") to entity "..ped)
+		--print("Attaching "..pModel.." ("..pHandle..") to entity "..ped)
    		--AttachEntityToEntity(int /* Entity */ entity1, int /* Entity */ entity2, int boneIndex, float xPos, float yPos, float zPos, float xRot, float yRot, float zRot, bool p9, bool useSoftPinning, bool collision, bool isPed, int vertexIndex, bool fixedRot);
 		AttachEntityToEntity(pHandle, ped, pBone, pPosition.x, pPosition.y, pPosition.z, pRotation.x, pRotation.y, pRotation.z, true, true, false, false, 1, true)
 	end
 
-	print("CreateProp:: Finished with Model: "..pModel..", Handle: "..pHandle..", location: "..json.encode(GetEntityCoords(pHandle)))
+	--print("CreateProp:: Finished with Model: "..pModel..", Handle: "..pHandle..", location: "..json.encode(GetEntityCoords(pHandle)))
 	SetModelAsNoLongerNeeded(hash)
 end
 

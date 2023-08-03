@@ -68,12 +68,12 @@ function startInteraction() {
 				z: parseFloat(interaction.getAttribute('data-z')),
 				heading: parseFloat(interaction.getAttribute('data-heading')),
 				animation: {
-					dict: interaction.getAttribute('data-animation-dict'),
-					name: interaction.getAttribute('data-animation-name'),
-					frames: JSON.parse(interaction.getAttribute('data-animation-frames')),
-					timer: interaction.getAttribute('data-animation-timer'),
-					frametime: interaction.getAttribute('data-animation-frametime'),
-					flag: interaction.getAttribute('data-animation-flag')
+					dicts: JSON.parse(interaction.getAttribute('data-animation-dicts')),
+					label: interaction.getAttribute('data-animation-label'),
+					// frames: JSON.parse(interaction.getAttribute('data-animation-frames')),
+					// timer: interaction.getAttribute('data-animation-timer'),
+					// frametime: interaction.getAttribute('data-animation-frametime'),
+					// flag: interaction.getAttribute('data-animation-flag')
 				},
 				object: parseInt(interaction.getAttribute('data-object')),
 				effect: interaction.getAttribute('data-effect'),
@@ -138,12 +138,12 @@ function showInteractionPicker(data) {
 		if (interaction.scenario) {
 			div.setAttribute('data-scenario', interaction.scenario);
 		} else {
-			div.setAttribute('data-animation-dict', interaction.animation.dict);
-			div.setAttribute('data-animation-name', interaction.animation.name);
-			div.setAttribute('data-animation-frames', JSON.stringify(interaction.animation.frames));
-			div.setAttribute('data-animation-timer', interaction.animation.timer);
-			div.setAttribute('data-animation-frametime', interaction.animation.frametime);
-			div.setAttribute('data-animation-flag', interaction.animation.flag);
+			div.setAttribute('data-animation-dicts', JSON.stringify(interaction.animation.dicts));
+			div.setAttribute('data-animation-label', interaction.animation.label);
+			// div.setAttribute('data-animation-frames', JSON.stringify(interaction.animation.frames));
+			// div.setAttribute('data-animation-timer', interaction.animation.timer);
+			// div.setAttribute('data-animation-frametime', interaction.animation.frametime);
+			// div.setAttribute('data-animation-flag', interaction.animation.flag);
 		}
 
 		if (interaction.object) {

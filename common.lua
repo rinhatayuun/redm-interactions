@@ -244,31 +244,35 @@ BathingAnimations = {
 	{label = "Bath: Scrub right leg", dict = "mini_games@bathing@regular@arthur", name = "right_leg_scrub_medium"}
 }
 
-EatingAnimations = {
+EatingAnimationsMale = {
 	{
-		label = "Eat", 
-		dict = "amb_rest_sit@prop_human_seat_chair_table@eating@fork_knife@cutting@male_a@base", 
-		name = "cutting_trans_chewing_01",
-		frames = {
-			-- "base",
-			-- "base_knife",
-			-- "base_fork",
-			"cutting_trans_chewing_01",
-			"cutting_trans_chewing_01_fork",
-			"cutting_trans_chewing_01_knife",
-			"cutting_trans_chewing_01_main",
-			"cutting_trans_chewing_02",
-			"cutting_trans_chewing_02_fork",
-			"cutting_trans_chewing_02_knife",
-			"cutting_trans_chewing_02_main",
-			"cutting_trans_chewing_03_fork",
-			"cutting_trans_chewing_03",
-			"cutting_trans_chewing_03_knife",
-			"cutting_trans_chewing_03_main",
-			"cutting_trans_chewing_05",
-			"cutting_trans_chewing_05_fork",
-			"cutting_trans_chewing_05_knife",
-			"cutting_trans_chewing_05_main"
+		label = "Eat Dinner", 
+		dicts = {
+			{
+				name ="amb_rest_sit@prop_human_seat_chair_table@eating@fork_knife@cutting@male_a@base",
+				frames = {
+					{
+						name = "cutting_trans_chewing_01",
+						time = 6000,
+						flag = 1
+					},
+					{
+						name = "cutting_trans_chewing_02",
+						time = 2000,
+						flag = 1
+					},
+					{
+						name = "cutting_trans_chewing_03",
+						time = 2000,
+						flag = 1
+					},
+					{
+						name = "cutting_trans_chewing_04",
+						time = 2000,
+						flag = 1
+					}
+				}
+			}
 		},
 		props = {
 			{
@@ -285,11 +289,166 @@ EatingAnimations = {
                 rotation = vector3(02.00, 00.9, -65.09),
                 attach = true
             }
-		},
-		frametime = -1,
-		flag = 0,
-		timer = 2000
+		}
 	},
-	{label = "Eat something else", dict = "amb_rest_sit@prop_human_seat_chair_table@eating@fork_knife@cutting@male_a@base", name = "cutting_trans_chewing_01"}
+	-- Spoons
+	{
+		label = "Eat Breakfast", 
+		dicts = {
+			{
+				name = "amb_camp@prop_camp_seat_chair_table_stew@eating@male_a@idle_a",
+				frames = {
+					{
+						name = "idle_a",
+						time = 6000,
+						flag = 1
+					},
+					{
+						name = "idle_b",
+						time = 3000,
+						flag = 0
+					},
+					{
+						name = "idle_c",
+						time = 3000,
+						flag = 0
+					},
+				},
+			},
+			{
+				name = "amb_camp@prop_camp_seat_chair_table_stew@eating@male_a@idle_b",
+				frames = {
+					{
+						name = "idle_d",
+						time = 6000,
+						flag = 1
+					},
+					{
+						name = "idle_e",
+						time = 3000,
+						flag = 0
+					},
+					{
+						name = "idle_f",
+						time = 3000,
+						flag = 0
+					},
+				},
+			},
+			{
+				name = "amb_camp@prop_camp_seat_chair_table_stew@eating@male_a@idle_c",
+				frames = {
+					{
+						name = "idle_g",
+						time = 6000,
+						flag = 1
+					},
+					{
+						name = "idle_h",
+						time = 3000,
+						flag = 0
+					},
+					{
+						name = "idle_i",
+						time = 3000,
+						flag = 0
+					},
+					{
+						name = "idle_i",
+						time = 3000,
+						flag = 0
+					},
+				},
+			},
+		},
+		props = {
+			{
+                model = 'p_spoon02x',
+                bone = 'IK_R_Hand',
+                position = vector3(0.09, 0.04, -0.02),
+                rotation = vector3(6.00, 0.09, -65.09),
+                attach = true
+            }
+		}
+	}
 }
 
+
+EatingAnimationsFemale = {
+	{
+		label = "Eat Dinner", 
+		dicts = {
+			{
+				name ="amb_rest_sit@prop_human_seat_chair_table@eating@fork_knife@cutting@female_a@base",
+				frames = {
+					{
+						name = "cutting_trans_chewing_01",
+						time = 10000,
+						flag = 1
+					},
+					{
+						name = "cutting_trans_chewing_02",
+						time = 6000,
+						flag = 1
+					},
+					{
+						name = "cutting_trans_chewing_04",
+						time = 6000,
+						flag = 1
+					},
+					{
+						name = "cutting_trans_chewing_05",
+						time = 6000,
+						flag = 1
+					}
+				}
+			}
+		},
+		props = {
+			{
+                model = 'p_dinnerknife01x',
+                bone = 'IK_R_Hand',
+                position = vector3(0.09, 0.04, -0.02),
+                rotation = vector3(6.00, 0.09, -65.09),
+                attach = true
+            },
+            {
+                model = 'p_dinnerfork01x',
+                bone = 'IK_L_Hand',
+                position = vector3(0.09, 0.03, 0.02),
+                rotation = vector3(02.00, 00.9, -65.09),
+                attach = true
+            }
+		}
+	},
+	-- Spoons
+	{
+		label = "Eat Breakfast", 
+		dicts = {
+			{
+				name = "amb_camp@prop_camp_seat_chair_table_stew@eating@female_a@idle_b",
+				frames = {
+					{
+						name = "idle_d",
+						time = 6000,
+						flag = 1
+					},
+					{
+						name = "idle_f",
+						time = 3000,
+						flag = 0
+					}
+				}
+			}
+		},
+		props = {
+			{
+                model = 'p_spoon02x',
+                bone = 'IK_R_Hand',
+                position = vector3(0.09, 0.04, -0.02),
+                rotation = vector3(6.00, 0.09, -65.09),
+                attach = true
+            }
+		}
+	}
+}

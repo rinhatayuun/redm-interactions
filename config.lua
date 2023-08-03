@@ -26,31 +26,24 @@ Config.Effects = {
 -- List of interactable types of objects.
 Config.Interactions = {
 	{
-		isCompatible = IsPedHuman,
+		isCompatible = IsPedHumanMale,
 		objects = GenericChairs,
 		radius = 1.5,
-		animations = EatingAnimations,
+		animations = EatingAnimationsMale,
 		x = 0.0,
 		y = 0.0,
-		z = 0.8,
-		heading = 180.0,
-		--props = {{model = 'p_parasol02x', bone = 'SKEL_R_Finger43', position = vector3(0.07, -0.04, -0.02), rotation = vector3(-90.00, 0.00, 0.00), attach = true},{model = 'p_parasol01x', bone = 'skel_l_hand', position = vector3(0.07, 0.02, 0.04), rotation = vector3(-20.00, 0.00, 0.00), attach = true}}
-		props = {
-			{
-                model = 'p_dinnerknife01x',
-                bone = 'IK_R_Hand',
-                position = vector3(0.00, 0.0, 0.00),
-                rotation = vector3(00.00, 0.00, 00.00),
-                attach = true
-            },
-            {
-                model = 'p_dinnerfork01x',
-                bone = 'IK_L_Hand',
-                position = vector3(00.00, 0.00, 0.00),
-                rotation = vector3(00.00, 00.00, 00.00),
-                attach = true
-            }
-		}
+		z = 0.5,
+		heading = 180.0
+	},
+	{
+		isCompatible = IsPedHumanFemale,
+		objects = GenericChairs,
+		radius = 1.5,
+		animations = EatingAnimationsFemale,
+		x = 0.0,
+		y = 0.0,
+		z = 0.5,
+		heading = 180.0
 	},
 	-- Pianos
 	{
